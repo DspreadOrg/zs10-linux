@@ -203,9 +203,6 @@ static void touchpad_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data)
     /*Save the pressed coordinates and the state*/
     if(touchpad_is_pressed()) {
         touchpad_get_xy(&last_x, &last_y);
-        // LOG("x y = %d, %d", last_x, last_y);
-        // OsLog(LOG_DEBUG,"last_x, last_y: %d, %d", last_x, last_y);
-        // todo 这里先做一个防飘的处理，后续由底层处理
         if(last_x > 320 || last_y > 240)
         {
             return;

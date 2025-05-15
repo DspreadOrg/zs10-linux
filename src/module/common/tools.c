@@ -225,7 +225,7 @@ int UnpackString(void *pvInBuff, void *pvOutBuff)
 {
 	if(pvInBuff == NULL || pvOutBuff == NULL)
 	 	return RET_FAIL;
-	if(strlen((char *)pvInBuff) == 0)//非必要数据返回值为空退出
+	if(strlen((char *)pvInBuff) == 0)//Non essential data returns a null value and exits
 		return RET_SUCC;
 	if(strlen((char *)pvOutBuff))
 	{
@@ -265,122 +265,6 @@ int UnpackObject(void *pvInBuff, void *pvOutBuff)
     *(ST_MyJson **)pvOutBuff = pstMyJson;
 	return RET_SUCC;
 }
-
-#if 0
-unsigned char * base64_encode(const unsigned char *src, int len, int *out_len)
-{
-    unsigned char *out = NULL;
-    uint olen = 0, out_put_len;
-    int ret;
-
-    olen = len * 4 / 3 + 4; /* 3-byte blocks to 4-byte */
-	olen += olen / 72; /* line feeds */
-	olen ++; /* nul termination */
-
-    out = MALLOC(olen, unsigned char);
-    if(out == NULL)
-    {
-        return NULL;
-    }
-    ret = YMI_AlgBase64Encode((char *)src, len, (char *)out, olen, &out_put_len);
-    if(ret != RET_SUCC)
-    {
-        FREE(out);
-        return NULL;
-    }
-    if(out_len)
-    {
-        *out_len = out_put_len;
-    }
-    return out;
-}
-#define MAX_LEN (2*1024*1024)
-#define AES_BLOCK_SIZE 16
-#define AES_KEY_SIZE 128
-
-
-unsigned char *aes_cbc_encrypt(const unsigned char *data, int in_len, unsigned int *out_len,
-        const unsigned char *key, const unsigned char *iv)
-{
-    if (in_len <= 0 || in_len >= MAX_LEN || key == NULL || iv == NULL) {
-        return NULL;
-    }
- 
-    if (!data) {
-        return NULL;
-    }
-    
-    mbedtls_aes_context aes_ctx;
-    int ret = 0;
-    unsigned int rest_len = in_len % AES_BLOCK_SIZE;
-    unsigned int padding_len = AES_BLOCK_SIZE - rest_len;
-    unsigned int src_len = in_len + padding_len;
- 
-    unsigned char *input = (unsigned char *) MALLOC(src_len, unsigned char);
-	unsigned int i = 0;
-    memcpy(input, data, in_len);
-    if (padding_len > 0) {
-//        memset(input + in_len, (unsigned char) padding_len, padding_len);
-        for (i = 0; i < padding_len; i++) {
-            *(input + in_len + i) = (unsigned char) padding_len;
-        }
-    }
- 
-    unsigned char *buff = (unsigned char *)MALLOC(src_len, unsigned char);
-    if (!buff) {
-        FREE(input);
-        return NULL;
-    }
-    mbedtls_aes_init(&aes_ctx);
-    ret = mbedtls_aes_setkey_enc(&aes_ctx, key, AES_KEY_SIZE);
-    if(ret != 0)
-    {
-        TOOLS_LOG("set key err=-0x%02x, key=%s", -ret, key);
-        goto exit;
-    }
-    ret = mbedtls_aes_crypt_cbc( &aes_ctx, MBEDTLS_AES_ENCRYPT, src_len,
-                     (unsigned char *)iv, input, buff);
-
-exit:
-    mbedtls_aes_free( &aes_ctx );
-    FREE(input)
-    if(ret != 0)
-    {
-        TOOLS_LOG("aes cbc enc err=-0x%02x", -ret);
-        FREE(buff);
-    }
-    else
-    {
-        if(out_len)
-        {
-            *out_len = src_len;
-        }
-    }
-    return buff;
-}
-void test_alg(void)
-{
-    unsigned char buff[] = "1234567890abcdefg";
-    unsigned char *out_data = NULL;
-    int len = 0;
-    SLEEP_S(3);
-    out_data = base64_encode(buff, strlen((char *)buff), &len);
-    if(out_data)
-    {
-        LOG_HEX("base64 enc", out_data, len);
-        FREE(out_data);
-    }
-
-    unsigned char key[] = "abcdefghijklmnop";
-    unsigned char iv[] = "abcdefghijklmnop";
-    out_data = aes_cbc_encrypt(buff, strlen((char *)buff), (unsigned int *)&len, key, iv);
-    if(out_data)
-    {
-        LOG_HEX("aes cbc enc", out_data, len);
-        FREE(out_data);
-    }
-}
-#endif
 
 int MyJsonCreate(ST_MyJson **ppstMyJson)
 {

@@ -567,7 +567,7 @@ int SysInfoLoad(ST_SysInfo *pstSysInfo)
 }
 
 int SysInfoLoadNV(ST_SysInfo *pstSysInfo)
-{//读取 systeminfo 校验md5 更新参数
+{//Read systeminfo, verify md5, update parameters
     int iRet = -1;
     int iJsonLen = 0;
     char szMd5[32 + 1] = {0};

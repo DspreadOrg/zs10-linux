@@ -21,11 +21,11 @@
 #define AUDIO_PCMBUF "pcmbuf"
 #define AUDIO_44100PCMFILE "44100pcmfile"
 #define AUDIO_16000PCMFILE "16000pcmfile"
-#define AUDIO_DAOZHANG "到账"
-#define AUDIO_SHOUKAN "收款"
-#define AUDIO_SYLL "剩余流量已不足, 请注意续费"
-#define AUDIO_QSYLKLAPPSMJH "请使用拉卡拉APP扫码激活"
-#define AUDIO_CHONGDZ "充电中"
+#define AUDIO_SAOZHANG "credited"
+#define AUDIO_SHOUKAN "Receipt"
+#define AUDIO_SYLL "Remaining data is insufficient, please pay attention to renewal"
+#define AUDIO_QSYLKLAPPSMJH "Please use the  APP to scan the code for activation"
+#define AUDIO_CONGDZ "Charging"
 
 
 //Constant

@@ -34,7 +34,7 @@
 #define DEV_LET_IP_VER_IPV6 2
 #define DEV_LET_IP_VER_IPV4V6 3
 
-#define WIFI_CONFIG_TIMEOUT_S (10 * 60) //AP配置等待时间10分钟
+#define WIFI_CONFIG_TIMEOUT_S (10 * 60) //AP configuration waiting time of 10 minutes
 #define WIFI_MONITOR_OFFLINE_WAIT_TIME_MS (100)
 #define WIFI_MONITOR_ONLINE_WAIT_TIME_MS (10 * 1000)
 #define WIFI_MONITOR_DIS_PLAY_TIME_MS (30 * 1000)  

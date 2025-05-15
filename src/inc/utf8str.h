@@ -40,7 +40,7 @@
 // fen
 #define AUDIO_FEN "分"
 
-//按键音嘀
+//key button beep di~
 #define AUDIO_ANJIANYIN "di"
 
 #endif

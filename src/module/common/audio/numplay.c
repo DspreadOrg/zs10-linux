@@ -119,7 +119,7 @@ int GetNumChineseSub(uint wNum, void *pvOutBuf, char *pcSpkZero)
 			memcpy(pcPtr, c_pszChineseNumStr, UTF8_ONE_CHINESE_SIZE);
             pcPtr += UTF8_ONE_CHINESE_SIZE;
 		}
-		//if ((*pcSpkZero==0)&&(cTmp==2))//读两
+		//if ((*pcSpkZero==0)&&(cTmp==2))//
 		memcpy(pcPtr, (c_pszChineseNumStr + cTmp * UTF8_ONE_CHINESE_SIZE), UTF8_ONE_CHINESE_SIZE);
         pcPtr += UTF8_ONE_CHINESE_SIZE;
 		*pcSpkZero = 1;
