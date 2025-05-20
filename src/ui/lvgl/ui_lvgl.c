@@ -1,5 +1,5 @@
 /**********************************************************************
-* Copyright (C)    Dspread
+* Copyright (C)    yunmazhineng
 * The name of the file：ui_lvgl.c
 * Summary of content：UI interface based on lvgl
 *
@@ -25,8 +25,8 @@
 #define NORMAL_FONT_FILE_PATH "EFS:/AlibabaPuHuiTi-small.ttf"
 #define BIG_FONT_SIZE (60)
 #define NORMAL_FONT_SIZE (20)
-#define LV_COLOR_BLACK lv_color_hex(0x80000000)//The first byte is the allphha value
-
+#define LV_COLOR_BLACK lv_color_make(0x00, 0x00, 0x00)
+#define LV_COLOR_WHITE lv_color_make(0xFF, 0xFF, 0xFF)
 //Constant
 
 
@@ -49,6 +49,15 @@ static lv_style_t s_stSmallFontStyle;
 //Global variables
 //Function implementation
 
+static lv_color_t LVColorSet(uint32_t wCol)
+{
+    uint8_t tR = 0, tG = 0, tB = 0;
+    tR = (wCol >> 16) & 0xFF;
+    tG = (wCol >> 8) & 0xFF;
+    tB = wCol & 0xFF;
+    UI_LV_LOG("tR = 0x%x, tG = 0x%x, tR = 0x%x", tR, tG, tB);
+    return lv_color_make(tR, tG, tB);
+}
 
 void LVLog(const char * buf)
 {
@@ -124,7 +133,7 @@ lv_obj_t *LVNormalPadCreate(lv_obj_t *pstParent, uint wWidth, uint wHeight)
 {
 	lv_obj_t *pstPad = lv_obj_create(pstParent);
 	// lv_obj_set_size(pstPad, wWidth, wHeight);
-    lv_obj_set_style_bg_color(pstPad, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
+    lv_obj_set_style_bg_color(pstPad, LV_COLOR_WHITE, LV_PART_MAIN);
     lv_obj_set_style_pad_all(pstPad, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(pstPad, 0, LV_PART_MAIN);
     lv_obj_set_style_radius(pstPad, 0, LV_PART_MAIN);
@@ -134,7 +143,7 @@ int LVMainPadCreateHandle(EM_UI_HANDEL_ID eID, void *pvParent, void *pvInData, v
 {
 	s_pstMainPad = lv_obj_create(lv_scr_act());
 	lv_obj_set_size(s_pstMainPad, LCD_DISP_WIDTH, LCD_DISP_HEIGHT);
-    lv_obj_set_style_bg_color(s_pstMainPad, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
+    lv_obj_set_style_bg_color(s_pstMainPad, LV_COLOR_WHITE, LV_PART_MAIN);
     lv_obj_set_style_pad_all(s_pstMainPad, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(s_pstMainPad, 0, LV_PART_MAIN);
     lv_obj_set_style_radius(s_pstMainPad, 0, LV_PART_MAIN);
@@ -158,7 +167,7 @@ int LVMainPadCreateHandle(EM_UI_HANDEL_ID eID, void *pvParent, void *pvInData, v
 
 	s_pstQRCodePad = LVNormalPadCreate(s_pstMainPad, 0, 0);
 	lv_obj_add_flag(s_pstQRCodePad, LV_OBJ_FLAG_HIDDEN);
-	s_pstQRCode = lv_qrcode_create(s_pstQRCodePad, 240, lv_color_hex(0x000000), lv_color_hex(0xFFFFFF));
+	s_pstQRCode = lv_qrcode_create(s_pstQRCodePad, 240, LV_COLOR_BLACK, LV_COLOR_WHITE);
 	return RET_SUCC;
 }
 
@@ -284,7 +293,7 @@ int LVDispPicHandle(EM_UI_HANDEL_ID eID, void *pvParent, void *pvInData, void *p
 		lv_obj_clear_flag(s_pstQRCodePad, LV_OBJ_FLAG_HIDDEN);
 		lv_qrcode_delete(s_pstQRCode);
 		// s_pstQRCode = lv_qrcode_create(s_pstQRCodePad, pstQRCodeDispConf->wSize, lv_color_hex(0x1E90FF), lv_color_hex(0xFFFF00));
-		s_pstQRCode = lv_qrcode_create(s_pstQRCodePad, pstQRCodeDispConf->wSize, lv_color_hex(0x000000), lv_color_hex(0xFFFFFF));
+		s_pstQRCode = lv_qrcode_create(s_pstQRCodePad, pstQRCodeDispConf->wSize, LV_COLOR_BLACK, LV_COLOR_WHITE);
 		lv_qrcode_update(s_pstQRCode, pstQRCodeDispConf->szQRCode, strlen(pstQRCodeDispConf->szQRCode));
 
 		// lv_obj_align(s_pstQRCode, LV_ALIGN_TOP_LEFT, 0, 0);
@@ -309,7 +318,7 @@ int LVDispPicHandle(EM_UI_HANDEL_ID eID, void *pvParent, void *pvInData, void *p
 		lv_obj_set_style_border_width(s_pstTextPad, 0, LV_PART_MAIN);
 		lv_obj_set_style_radius(s_pstTextPad, 0, LV_PART_MAIN);
 		lv_obj_align(s_pstTextPad, LV_ALIGN_TOP_LEFT, pstTextDispConfg->iX, pstTextDispConfg->iY);
-		lv_obj_set_style_bg_color(s_pstTextPad, lv_color_hex(pstTextDispConfg->wBgColor), LV_PART_MAIN);
+		lv_obj_set_style_bg_color(s_pstTextPad, LVColorSet(pstTextDispConfg->wBgColor), LV_PART_MAIN);
 		lv_obj_set_size(s_pstTextPad, LCD_DISP_WIDTH, pstTextDispConfg->wFontSize);
 		lv_obj_clear_flag(s_pstTextPad, LV_OBJ_FLAG_HIDDEN);
 		lv_obj_clear_flag(s_pstTextPad, LV_OBJ_FLAG_SCROLLABLE);
@@ -320,7 +329,7 @@ int LVDispPicHandle(EM_UI_HANDEL_ID eID, void *pvParent, void *pvInData, void *p
 		{
 			lv_obj_add_style(s_pstTextLabel, &s_stNorFontStyle, LV_PART_MAIN);
 		}
-		lv_obj_set_style_text_color(s_pstTextLabel, lv_color_hex(pstTextDispConfg->wFontColor), LV_PART_MAIN);
+		lv_obj_set_style_text_color(s_pstTextLabel, LVColorSet(pstTextDispConfg->wFontColor), LV_PART_MAIN);
 		// lv_obj_set_style_text_letter_space(s_pstTextLabel, 5, LV_PART_MAIN);
 		lv_label_set_text(s_pstTextLabel, pstTextDispConfg->szText);
 		// lv_obj_align(s_pstQRCode, LV_ALIGN_TOP_LEFT, 0, 0);
@@ -339,7 +348,7 @@ int LVDispPicHandle(EM_UI_HANDEL_ID eID, void *pvParent, void *pvInData, void *p
 		lv_obj_set_style_border_width(s_pstOtherPad, 0, LV_PART_MAIN);
 		lv_obj_set_style_radius(s_pstOtherPad, 0, LV_PART_MAIN);
 		lv_obj_align(s_pstOtherPad, LV_ALIGN_TOP_LEFT, pstTextDispConfg->iX, pstTextDispConfg->iY);
-		lv_obj_set_style_bg_color(s_pstOtherPad, lv_color_hex(pstTextDispConfg->wBgColor), LV_PART_MAIN);
+		lv_obj_set_style_bg_color(s_pstOtherPad, LVColorSet(pstTextDispConfg->wBgColor), LV_PART_MAIN);
 		lv_obj_set_size(s_pstOtherPad, LCD_DISP_WIDTH, pstTextDispConfg->wFontSize * 2);
 		lv_obj_clear_flag(s_pstOtherPad, LV_OBJ_FLAG_HIDDEN);
 		lv_obj_clear_flag(s_pstOtherPad, LV_OBJ_FLAG_SCROLLABLE);
@@ -348,7 +357,7 @@ int LVDispPicHandle(EM_UI_HANDEL_ID eID, void *pvParent, void *pvInData, void *p
 		lv_obj_set_width(s_pstOtherLabel, LCD_DISP_WIDTH - 10);
 		// lv_label_set_long_mode(s_pstOtherLabel, LV_LABEL_LONG_SCROLL_CIRCULAR);
 		lv_obj_add_style(s_pstOtherLabel, &s_stSmallFontStyle, LV_PART_MAIN);
-		lv_obj_set_style_text_color(s_pstOtherLabel, lv_color_hex(pstTextDispConfg->wFontColor), LV_PART_MAIN);
+		lv_obj_set_style_text_color(s_pstOtherLabel, LVColorSet(pstTextDispConfg->wFontColor), LV_PART_MAIN);
 		// lv_obj_set_style_text_letter_space(s_pstOtherLabel, 5, LV_PART_MAIN);
 		// lv_obj_set_style_text_align(s_pstOtherLabel, LV_TEXT_ALIGN_LEFT, 0);
 		lv_label_set_text(s_pstOtherLabel, pstTextDispConfg->szText);

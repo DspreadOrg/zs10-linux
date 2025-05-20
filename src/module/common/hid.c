@@ -397,8 +397,8 @@ static int LCDShow(int iCode, char *pcInData, int iInDataLen)
         .szText = "",
         .iX = 0,
         .iY = 410,
-        .wBgColor = 0xE39C2B,
-        .wFontColor = 0x00000,
+        .wBgColor = 0xE39B2C,
+        .wFontColor = 0x000000,
         .wFontSize = 88,
     };
 	ST_QRCodeDispConf stQRCode = {
@@ -512,7 +512,7 @@ static int LCDShow(int iCode, char *pcInData, int iInDataLen)
 		memcpy(stTextLabel.szText, "UPI ID: ", strlen("UPI ID: "));
 		UidAnaly(stQRCode.szQRCode, stTextLabel.szText + strlen(stTextLabel.szText));
 		stText.iY = 130;
-		stText.wBgColor = 0xE39C2B;
+		stText.wBgColor = 0xE39B2C;
 		stQRCode.iX = 185;
 		stQRCode.iY = 300;
 		stQRCode.wSize = 430;
