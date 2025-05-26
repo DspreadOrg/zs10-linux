@@ -370,7 +370,7 @@ int LVDispPicHandle(EM_UI_HANDEL_ID eID, void *pvParent, void *pvInData, void *p
 			lv_obj_set_style_border_width(s_pstOtherPad, 0, LV_PART_MAIN);
 			lv_obj_set_style_radius(s_pstOtherPad, 0, LV_PART_MAIN);
 			lv_obj_align(s_pstOtherPad, LV_ALIGN_TOP_LEFT, pstVideoDispConf->iX, pstVideoDispConf->iY);
-			lv_obj_set_style_bg_color(s_pstOtherPad, LV_COLOR_BLACK, LV_PART_MAIN);
+			lv_obj_set_style_bg_color(s_pstOtherPad, lv_color_hex(0x00000000), LV_PART_MAIN);
 			lv_obj_set_size(s_pstOtherPad, pstVideoDispConf->wWidth, pstVideoDispConf->wHeight);
 			lv_obj_clear_flag(s_pstOtherPad, LV_OBJ_FLAG_HIDDEN);
 			lv_obj_clear_flag(s_pstOtherPad, LV_OBJ_FLAG_SCROLLABLE);
