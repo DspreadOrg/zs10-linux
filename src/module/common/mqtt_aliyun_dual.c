@@ -644,6 +644,7 @@ static int MQTTSubscribe(reconnectpara *pstPara, const char* c_pszTopic, enum Qo
 	}
 	sprintf(pstConf->astSubList[iSubCnt].szSubTopic, "%s", c_pszTopic);
 	pstConf->astSubList[iSubCnt].cb_SubRecv = cb_MessHandler;
+	pstConf->astSubList[iSubCnt].iSubRet = YMI_OK;
 	pstConf->iSubNum ++;
 	return 0;
 }
@@ -676,6 +677,7 @@ static int MQTTPublish(reconnectpara *pstPara, const char* c_pszTopic, CB_MQTT_P
 	}
 	sprintf(pstConf->astPubList[iPubCnt].szPubTopic, "%s", c_pszTopic);
 	pstConf->astPubList[iPubCnt].cb_PubMsgPack = cb_MessHandler;
+	pstConf->astPubList[iPubCnt].iPubRet = YMI_OK;
 	pstConf->iPubNum ++;
 	return 0;
 }
@@ -683,6 +685,7 @@ static int MQTTPublish(reconnectpara *pstPara, const char* c_pszTopic, CB_MQTT_P
 static int MQTTYield(reconnectpara *pstPara, int iTimeOutMS)
 {
 	ST_MQTTConf *pstConf = SelMqttConf(pstPara);
+	int i;
 
 	if(pstConf == NULL)
 	{
@@ -696,6 +699,15 @@ static int MQTTYield(reconnectpara *pstPara, int iTimeOutMS)
 	if((pstPara->iMqttType == 0 && s_tMQTTTaskIDA) || 
 		(pstPara->iMqttType && s_tMQTTTaskIDB))
 	{
+		for(i = 0; i < pstConf->iSubNum; i++)
+		{
+			if(pstConf->astSubList[i].iSubRet != YMI_OK)
+			{
+				pstPara->cal_set.mqtt_sub = MQTT_CACK;
+				ALIOT_PRINT("sub %s fail ret=0x%04x", pstConf->astSubList[i].szSubTopic, -pstConf->astSubList[i].iSubRet);
+				break;
+			}
+		}
 		SLEEP_MS(iTimeOutMS);
 		return 0;
 	}
@@ -771,7 +783,11 @@ void mqtt_work_taskA(void * argv)
 	sprintf(SysInfoGet()->szDeviceName, "%s", "DspreadTest08");
 	sprintf(SysInfoGet()->szDeviceSecret, "%s", "46d83f6f395e3efa065da17068c855a1");
 #endif
-	
+
+	//topic must start with '/'  Note:This does not require modifying the server-side topic (server topic is still 'xxx/xxx')
+	//eg: 
+	//	correct：'/xxx/xxx'
+	//	incorrect：'xxx/xxx'
 	sprintf(topic_sub_messageA, "/%s/%s/user/message", SysInfoGet()->szProductKey, SysInfoGet()->szDeviceName);
 	sprintf(topic_sub_messageA2, "/%s/%s/user/pushMsg", SysInfoGet()->szProductKey, SysInfoGet()->szDeviceName);
 	sprintf(topic_sub_upgradeA, "/ota/device/upgrade/%s/%s", SysInfoGet()->szProductKey, SysInfoGet()->szDeviceName);

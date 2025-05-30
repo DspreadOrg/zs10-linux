@@ -1,5 +1,5 @@
 /**********************************************************************
-* Copyright (C)    yunmazhineng
+* Copyright (C)    Dspread
 * The name of the file：ui_lvgl.c
 * Summary of content：UI interface based on lvgl
 *

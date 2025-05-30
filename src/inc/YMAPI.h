@@ -1455,7 +1455,8 @@ typedef enum{
     DEV_EVENT_ID_SAVE_PIC_ZIP,
     DEV_EVENT_ID_SAVE_PIC_ZIP_DONE,
     DEV_EVENT_ID_SAVE_PIC_ZIP_FAILS,
-
+    DEV_EVENT_ID_VIDEO_PLAY,
+    DEV_EVENT_ID_VIDEO_STOP,
     TASK_EVENT_ID_APP_MAX = 0xFF00,
 }EM_YMI_EVENT_ID;
 /**
@@ -1818,10 +1819,12 @@ typedef struct {
 	bool bIsOta;
 	char szSubTopic[MQTT_TOPIC_BUFF_MAX_SIZE];
 	CB_MQTT_SUB_RECV cb_SubRecv;
+    int iSubRet;
 }ST_MQTTSubConf;
 typedef struct {
 	char szPubTopic[MQTT_TOPIC_BUFF_MAX_SIZE];
 	CB_MQTT_PUB_MSG_PACK cb_PubMsgPack;
+    int iPubRet;
 }ST_MQTTPubConf;
 typedef struct 
 {
