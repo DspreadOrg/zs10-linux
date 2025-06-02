@@ -479,7 +479,7 @@ void mbedtls_pk_init( mbedtls_pk_context *ctx );
 void mbedtls_pk_free( mbedtls_pk_context *ctx );
 int mbedtls_pk_parse_public_key( mbedtls_pk_context *ctx,
                          const unsigned char *key, size_t keylen );
-mbedtls_rsa_context *ym_mbedtls_pk_rsa( const mbedtls_pk_context pk );
+
 static mbedtls_rsa_context *ym_mbedtls_pk_rsa( const mbedtls_pk_context pk )
 {
     return( (mbedtls_rsa_context *) (pk).pk_ctx );
