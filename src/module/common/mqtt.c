@@ -41,7 +41,7 @@ void http_test(void)
 	// EM_SOCKET_TYPE type = SOCKET_TCP_CLIENT; 
 	EM_SOCKET_TYPE type = SOCKET_WIFI_TCP_CLIENT; 
     ret = YMI_HttpCommu(type, "http://dspread/device/findDeviceInfo", NULL, 
-        (uchar *)send, strlen(send), (uchar *)recv, sizeof(recv));
+        (uchar *)send, strlen(send), (uchar *)recv, sizeof(recv),10,30);
     MQTT_LOG("http commut ret=%d", ret);
 
     YMI_FsDelete(file);

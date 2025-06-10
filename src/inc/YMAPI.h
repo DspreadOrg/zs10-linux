@@ -47,12 +47,20 @@ typedef enum {
     YMI_ERR_NVM_READ = YMI_ERR_COMMON_BASE - 11,
     YMI_ERR_MEM_MALLOC = YMI_ERR_COMMON_BASE - 12,//malloc failure
     YMI_ERR_GET_APP_DIR = YMI_ERR_COMMON_BASE - 13,
+    YMI_ERR_NVM_OPEN = YMI_ERR_COMMON_BASE - 14,//Failed to open flash
+    YMI_ERR_NVM_ERR_FILE = YMI_ERR_COMMON_BASE - 15,//Incorrect file
+    YMI_ERR_NVM_UNSUPPORT = YMI_ERR_COMMON_BASE - 16,//Writing to flash is not supported
+    YMI_ERR_NVM_READ_OVERSIZE = YMI_ERR_COMMON_BASE - 17,//The read data exceeds the saved cache
 
     YMI_ERR_SYSTEM_BASE = -100,
     YMI_ERR_SYSTEM_ENVPARAM_WRITE = YMI_ERR_SYSTEM_BASE - 1,
     YMI_ERR_SYSTEM_ENVPARAM_READ = YMI_ERR_SYSTEM_BASE - 2,
     YMI_ERR_SYSTEM_OVER_MAX_LENGTH = YMI_ERR_SYSTEM_BASE - 3,
     YMI_ERR_SYSTEM_INVALID_PARTITION = YMI_ERR_SYSTEM_BASE - 4,
+    YMI_ERR_SYSTEM_SN_SET_REPEAT = YMI_ERR_SYSTEM_BASE - 5,//sn Repeat setting
+    YMI_ERR_SYSTEM_SN_OVER_SIZE = YMI_ERR_SYSTEM_BASE - 6,//sn exceeds the limit length
+    YMI_ERR_SYSTEM_SN_SET_FAIL = YMI_ERR_SYSTEM_BASE - 7,//sn setting failed
+    YMI_ERR_SYSTEM_SN_GET_OVERSIZE = YMI_ERR_SYSTEM_BASE - 8,//The obtained sn exceeds the length of the cache
 
     YMI_ERR_SEMAPHORE_BASE = -150,  /* Semaphore */
     YMI_ERR_SEMAPHORE_CREATE_FAILED = YMI_ERR_SEMAPHORE_BASE - 1,
@@ -179,6 +187,8 @@ typedef enum {
     YMI_ERR_HTTP_DL_SEND_REQ = YMI_ERR_HTTP_BASE - 12,//The download request sent failed.
     YMI_ERR_HTTP_DL_SAVE = YMI_ERR_HTTP_BASE - 13,//Save failed
     YMI_ERR_HTTP_DL_RECV = YMI_ERR_HTTP_BASE - 14,//Receiving failed
+    YMI_ERR_HTTP_CONNECT_TIMEOUT = YMI_ERR_HTTP_BASE - 15,//Connection timeout
+    YMI_ERR_HTTP_RECV_TIMEOUT = YMI_ERR_HTTP_BASE - 16,//Receive timeout
 
     YMI_ERR_JSON_BASE = -440,//json
     YMI_ERR_JSON_CREATE = YMI_ERR_JSON_BASE - 1, /* Error occurred while creating JSON. */
@@ -1455,8 +1465,10 @@ typedef enum{
     DEV_EVENT_ID_SAVE_PIC_ZIP,
     DEV_EVENT_ID_SAVE_PIC_ZIP_DONE,
     DEV_EVENT_ID_SAVE_PIC_ZIP_FAILS,
+
     DEV_EVENT_ID_VIDEO_PLAY,
     DEV_EVENT_ID_VIDEO_STOP,
+
     TASK_EVENT_ID_APP_MAX = 0xFF00,
 }EM_YMI_EVENT_ID;
 /**
@@ -1591,31 +1603,27 @@ int YMI_WiFiSocketFree(int iIdx);
 /**
  *@brief     Write to the configuration file
  *@details  
- *@param    p_cszFileName       The name of the configuration file
- *@param    pvBuffer            Data to be written
- *@param    ulBlocklLen         The size of the block to be written
- *@param    ulBlocklNum         The number of blocks to be written
+ *@param    pvData            Data to be written
+ *@param    wDataSize         The number of blocks to be written
 
  *@return
  *@li       >0                    The number of bytes successfully written
  *@li       YMI_ERR_NVM_WRITE     Operation failed
- *@li       YMI_ERR_PARA Illegal parameter(p_cszFileName == NULL || pvBuffer == NULL || ulBlocklLen == 0 || ulBlocklNum == 0)
+ *@li       YMI_ERR_PARA Illegal parameter
 */
-int YMI_NvmWrite(const char *p_cszFileName, void *pvBuffer, ulong ulBlocklLen, ulong ulBlocklNum);
+int YMI_NvmWrite(void *pvData, uint wDataSize);
 /**
  *@brief     Read the configuration file.
  *@details  
- *@param    p_cszFileName       The name of the configuration file
- *@param    pvBuffer            The data read
- *@param    ulBlocklLen         To read the block size
- *@param    ulBlocklNum         The number of blocks to be read
+ *@param    pvData            The data read
+ *@param    wDataSize         The number of blocks to be read
 
  *@return
  *@li       >0                   The number of bytes that were successfully read.
  *@li       YMI_ERR_NVM_READ     Operation failed
- *@li       YMI_ERR_PARA Illegal parameter(p_cszFileName == NULL || pvBuffer == NULL || ulBlocklLen == 0 || ulBlocklNum == 0)
+ *@li       YMI_ERR_PARA Illegal parameter
 */
-int YMI_NvmRead(const char *p_cszFileName, void *pvBuffer, ulong ulBlocklLen, ulong ulBlocklNum);
+int YMI_NvmRead(void *pvData, uint wDataSize);
 
 /* Display API */
 typedef enum {
@@ -1908,6 +1916,8 @@ int YMI_MQTTPubMsg(T_Task tTaskID, ST_MQTTPubEventInfo *pstInfo);
  *@param  	wInDataLen The length of the http send data. If it is 0, it will use the "GET" method; if it is greater than 0, it will use the "POST" method.
  *@param  	pbyOutData Returns the data receiving cache
  *@param  	wOutDataMaxSize The size of the received return data cache
+ *@param  	wConnectTimeoutMS Connection timeout period. If it is 0, the default value of 10 seconds will be used
+ *@param  	wRecvTimeoutMS The receive timeout period. If it is 0, the default value of 5 seconds will be used
  *@return   Returns the length of the received data
  *@li       YMI_ERR_PARA Illegal parameter
  *@li       YMI_ERR_HTTP_PARSE_URL Illegal URL
@@ -1921,7 +1931,8 @@ int YMI_MQTTPubMsg(T_Task tTaskID, ST_MQTTPubEventInfo *pstInfo);
  *@li       YMI_ERR_HTTP_RET_CONTENT_OVERSIZE The returned data exceeds the cache size
 */
 int YMI_HttpCommu(EM_SOCKET_TYPE eSocketType, char *pszUrl, char *pszHead, 
-	uchar *pbyInData, uint wInDataLen, uchar *pbyOutData, uint wOutDataMaxSize);
+    uchar *pbyInData, uint wInDataLen, uchar *pbyOutData, uint wOutDataMaxSize, 
+    uint wConnectTimeoutMS, uint wRecvTimeoutMS);
 
 /**
  *@brief    HTTP download file
