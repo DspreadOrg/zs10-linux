@@ -56,7 +56,27 @@ void SnWriteDemo(){
 }
 
 
-
+int getGmtTimeFromBody(char*input,char *result) {
+  
+    char *date_start = strstr(input, "Date: ");
+    if (date_start == NULL) {
+        return 1;
+    }
+    
+    date_start += strlen("Date: ");
+    
+    char *gmt_end = strstr(date_start, "\r\n");
+    if (gmt_end == NULL) {
+        return 1;
+    }
+    
+    size_t length = gmt_end - date_start;
+    
+    strncpy(result, date_start, length);
+    result[length] = '\0';  // 确保字符串以空字符结尾
+    LOG("result = %s",result);
+    return 0;
+}
 const char http_date [] = "Wed, 11 Jun 2025 10:15:47 GMT";
 int http_date_to_set(const char *http_date) {
     if (!http_date ) {
@@ -90,5 +110,30 @@ int http_date_to_set(const char *http_date) {
     else if (strcmp(month, "Oct") == 0) tm_time.tm_mon = 9;
     else if (strcmp(month, "Nov") == 0) tm_time.tm_mon = 10;
     else if (strcmp(month, "Dec") == 0) tm_time.tm_mon = 11;
+
+	YMI_SysSetDevTime(tm_time);
     return 0;
+}
+extern int g_iNetOnline;
+void syncTimeWithHTTP(){
+    char request_headers[1024] = {0};
+    char request_body[1024] = {0};
+	char timeStr[64]={0};
+    char response[1024*3] = {0};
+
+    strcat(request_headers,"GET /get HTTP/1.1\r\nHost: httpbin.org\r\nConnection: close\r\nAccept: */*\r\n\r\n");
+    LOG("request_headers = %s",request_headers);
+    while (!g_iNetOnline)
+    {
+        SLEEP_S(5);
+    }
+
+    int ret = YMI_HttpCommuLKL(SOCKET_TCP_CLIENT,"https://httpbin.org/get",request_headers,request_body,0,response,sizeof(response));
+
+	if(ret >30){
+		ret = getGmtTimeFromBody(response,timeStr);
+		if(ret == 0){
+			http_date_to_set(timeStr);
+		}
+	}
 }
