@@ -75,6 +75,7 @@ static QL_ERROR_CODE_E start_data_call(void)
    	{
    		NET_LOG("%s_%d ===APN not found,use default\n", __func__, __LINE__);
    		pAPNinfo=&dApn;
+		//return RET_FAIL; //if you want use PLMN uncommon here.
    	}
 
     ret = YMI_PppDial(DATA_CALL_PROFILE_IDX, (char *)pAPNinfo->apn, (char *)pAPNinfo->user, (char *)pAPNinfo->password);

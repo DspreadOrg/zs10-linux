@@ -1,6 +1,7 @@
 #ifndef _UI_LVGL_H_
 #define _UI_LVGL_H_
 
+#define QRCODE_BUFF_MAX_SIZE (512)
 typedef enum ui_handel_id{
 	UI_CREATE,
 	UI_SCREEN_DISP,
@@ -20,7 +21,7 @@ typedef struct ui_queue
 
 typedef struct qrcode_disp_conf
 {
-	char szQRCode[256];
+	char szQRCode[QRCODE_BUFF_MAX_SIZE];
 	int iX;
 	int iY;
 	uint wSize;

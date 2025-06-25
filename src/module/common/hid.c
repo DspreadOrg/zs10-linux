@@ -380,11 +380,13 @@ static int UidAnaly(void *pvInVal, void *pvOutVal)
 
 	return 0;
 }
-static int LCDShow(int iCode, char *pcInData, int iInDataLen)
+static int LCDShow(int iCode, char *pcInData, int iInDataLen, bool bIsFirstPack)
 {
-	int iOff = 0, iPackLen;
+	int iOff = 0;
+	static int s_iPackLen = 0, s_iSaveDataOff = 0;
 	int iLen = 0;
-	char szQrcode[512] = {0};
+	char szQrcode[QRCODE_BUFF_MAX_SIZE] = {0};
+	static char *pszSaveData = NULL;
 	ST_DevPlayAds *pstPlay = NULL;
 	ST_PicDispConf stPicUp = {
 		.iX = 0,
@@ -428,13 +430,54 @@ static int LCDShow(int iCode, char *pcInData, int iInDataLen)
 		return RET_SUCC;
 	}
 
-	iPackLen = (pcInData[iOff] << 8) | pcInData[iOff + 1];
-	iOff += 2;
-	if (iPackLen + iOff != iInDataLen - 1)
+	// iPackLen = (pcInData[iOff] << 8) | pcInData[iOff + 1];
+	// iOff += 2;
+	// if (iPackLen + iOff != iInDataLen - 1)
+	// {
+	// 	HID_LOG("[ERR]pack len err datalen=%d, packlen=%d", iInDataLen, iPackLen);
+	// 	return RET_FAIL;
+	// }
+
+	if(bIsFirstPack)
 	{
-		HID_LOG("[ERR]pack len err datalen=%d, packlen=%d", iInDataLen, iPackLen);
-		return RET_FAIL;
+		FREE(pszSaveData);
+		pszSaveData = NULL;
+		s_iPackLen = (pcInData[iOff] << 8) | pcInData[iOff + 1];
+		iOff += 2;
+		if (s_iPackLen + iOff != iInDataLen - 1)
+		{
+			pszSaveData = MALLOC(s_iPackLen + 1, char);
+			memset(pszSaveData, 0x00, s_iPackLen + 1);
+			memcpy(pszSaveData, pcInData + iOff, iInDataLen - iOff);
+			s_iSaveDataOff = iInDataLen - iOff;			
+			HID_LOG("pack len datalen=%d, packlen=%d, save off=%d, ready to recv next pack", iInDataLen, s_iPackLen, s_iSaveDataOff);
+			return RET_OTHER;
+		}
 	}
+	else
+	{
+		if(s_iPackLen < iInDataLen - 1)
+		{
+			HID_LOG("[ERR] datalen=%d, packlen=%d, save buff over size", iInDataLen, s_iPackLen);
+			return RET_FAIL;
+		}
+		if(pszSaveData == NULL)
+		{
+			HID_LOG("[ERR] save buff is null");
+			return RET_FAIL;
+		}
+		memcpy(pszSaveData + s_iSaveDataOff, pcInData, iInDataLen);
+		s_iSaveDataOff += iInDataLen;
+		if(s_iSaveDataOff - 1 != s_iPackLen)
+		{
+			HID_LOG("pack len datalen=%d, packlen=%d, save off=%d, ready to recv next pack", iInDataLen, s_iPackLen, s_iSaveDataOff);
+			return RET_OTHER;
+		}
+		//接收完成
+		pcInData = pszSaveData;
+		iOff = 0;
+	}
+	
 	if(iCode == HID_LCD_OPS_CODE_DISP_ADS)
 	{
 		pstPlay = MALLOC(1, ST_DevPlayAds);
@@ -544,7 +587,12 @@ static int CmdProce(EM_HID_CMD_TYPE eType, int iCode, char *pcInData, int iInDat
 			case HID_LCD_OPS_CODE_SHOW_AMT_TR_FAIL:
 			case HID_LCD_OPS_CODE_SHOW_AMT_QR_STR:
 			case HID_LCD_OPS_CODE_DISP_ADS:
-				iRet = LCDShow(iCode, pcInData, iInDataLen);
+				iRet = LCDShow(iCode, pcInData, iInDataLen, bFirstPack);
+				if(iRet == RET_OTHER)
+				{
+					bFirstPack = FALSE;
+					return iRet;
+				}
 				break;
 			default:
 				iRet = RET_FAIL;

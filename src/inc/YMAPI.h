@@ -1933,6 +1933,8 @@ int YMI_MQTTPubMsg(T_Task tTaskID, ST_MQTTPubEventInfo *pstInfo);
 int YMI_HttpCommu(EM_SOCKET_TYPE eSocketType, char *pszUrl, char *pszHead, 
     uchar *pbyInData, uint wInDataLen, uchar *pbyOutData, uint wOutDataMaxSize, 
     uint wConnectTimeoutMS, uint wRecvTimeoutMS);
+int YMI_HttpCommuLKL(EM_SOCKET_TYPE eSocketType, char *pszUrl, char *pszHead, 
+    uchar *pbyInData, uint wInDataLen, uchar *pbyOutData, uint wOutDataMaxSize);
 
 /**
  *@brief    HTTP download file
