@@ -44,6 +44,23 @@
         "ranges": "c",
         "span": "c",
         "apn.h": "c",
-        "system.h": "c"
+        "system.h": "c",
+        "format": "c",
+        "memory": "c",
+        "ratio": "c",
+        "xmemory": "c",
+        "xstring": "c",
+        "xtr1common": "c",
+        "xutility": "c",
+        "charconv": "c",
+        "chrono": "c",
+        "istream": "c",
+        "ostream": "c",
+        "vector": "c",
+        "algorithm": "c",
+        "xiosbase": "c",
+        "xlocale": "c",
+        "bit": "c",
+        "numeric": "c"
     }
 }

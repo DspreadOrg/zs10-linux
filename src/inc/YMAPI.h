@@ -235,6 +235,8 @@ typedef enum {
     YMI_ERR_PORT_READ = YMI_ERR_PORT_BASE - 3,
     YMI_ERR_PORT_WRITE = YMI_ERR_PORT_BASE - 4,
     YMI_ERR_PORT_CLEAR_READBUF = YMI_ERR_PORT_BASE - 5,
+    YMI_ERR_PORT_NO_SUPPORT = YMI_ERR_PORT_BASE - 6,
+    YMI_ERR_PORT_ENABLE = YMI_ERR_PORT_BASE - 7,
     
     YMI_ERR_HID_BASE = -510,                     /* HID */
     YMI_ERR_HID_OPEN = YMI_ERR_HID_BASE - 1,
@@ -242,6 +244,7 @@ typedef enum {
     YMI_ERR_HID_READ = YMI_ERR_HID_BASE - 3,
     YMI_ERR_HID_WRITE = YMI_ERR_HID_BASE - 4,
     YMI_ERR_HID_CLEAR_READBUF = YMI_ERR_HID_BASE - 5,
+    YMI_ERR_HID_KEYBOARD_SEND = YMI_ERR_HID_BASE - 6,
 
     YMI_ERR_DISP_BASE = -520,                     /* Display */
     YMI_ERR_DISP_IMAGE = YMI_ERR_DISP_BASE - 1,
@@ -292,7 +295,11 @@ typedef enum {
     YMI_ERR_ZIP_ILLEGAL_NAME = YMI_ERR_ZIP_BASE - 2,
     YMI_ERR_ZIP_ADD_FILE_FAILS = YMI_ERR_ZIP_BASE - 3,
     YMI_ERR_ZIP_UNZIP_FAILS = YMI_ERR_ZIP_BASE - 4,
-    YMI_ZIP_CLOSE_FAILS = YMI_ERR_ZIP_BASE - 5,
+    YMI_ERR_ZIP_CLOSE_FAILS = YMI_ERR_ZIP_BASE - 5,
+    YMI_ERR_ZIP_NAME_TO_LONG = YMI_ERR_ZIP_BASE - 6,
+    YMI_ERR_ZIP_OPEN_FAILS = YMI_ERR_ZIP_BASE - 7,
+    YMI_ERR_ZIP_MAKE_DIR_FAILS = YMI_ERR_ZIP_BASE - 8,
+    YMI_ERR_ZIP_MALLOC_FAILS = YMI_ERR_ZIP_BASE - 9,
 
     YMI_ERR_VIDEO_PLAY_BASE = -680,
     YMI_ERR_VIDEP_PLAY_INIT = YMI_ERR_VIDEO_PLAY_BASE - 1,
@@ -302,6 +309,8 @@ typedef enum {
     YMI_ERR_VIDEP_PLAY_STOP = YMI_ERR_VIDEO_PLAY_BASE - 5,
 
 
+    YMI_ERR_NTP_BASE = 700,
+    YMI_ERR_NTP_SET_TIME = YMI_ERR_NTP_BASE - 1,
     YMI_ERR_NOT_SUPPORT = -9999,
 }EM_YMI_ERR;
 
@@ -1001,22 +1010,12 @@ typedef enum{
     K_VOL_UP    = 0x02,
     K_MENU      = 0x03,
     K_POWER     = 0x0A,
-	K_ZERO		= 0x30,
-	K_ONE		= 0x31,
-	K_TWO		= 0x32,
-	K_THREE		= 0x33,
-	K_FOUR		= 0x34,
-	K_FIVE		= 0x35,
-	K_SIX		= 0x36,
-	K_SEVEN		= 0x37,
-	K_EIGHT		= 0x38,
-	K_NINE		= 0x39,
-    K_CODE_MAX  = 0xFFFF,
+
 }EM_KEY_CODE;
 
 typedef enum{
-    EM_KEY_SHORTPRESS = 0,
-    EM_KEY_RELEASE,
+    EM_KEY_RELEASE = 0,
+    EM_KEY_SHORTPRESS,
     EM_PWRKEY_LONGPRESS,
     EM_SEKEY_HIT,
     EM_KEY_INVALID_STATE = 0xFFFF,
@@ -1080,12 +1079,12 @@ int YMI_Fota(char *pszPath);
 * @{
 */
 typedef enum {
-    EM_VOL_LEVEL_1 = 15,
-    EM_VOL_LEVEL_2 = 25,
-    EM_VOL_LEVEL_3 = 38,
-    EM_VOL_LEVEL_4 = 50,
-    EM_VOL_LEVEL_5 = 60,
-    EM_VOL_LEVEL_MAX = 0xFFFFFFFF,
+    EM_VOL_LEVEL_1 = 40,
+    EM_VOL_LEVEL_2 = 50,
+    EM_VOL_LEVEL_3 = 60,
+    EM_VOL_LEVEL_4 = 70,
+    EM_VOL_LEVEL_5 = 80,
+    EM_VOL_LEVEL_MAX = EM_VOL_LEVEL_5,
 }EM_VOL_LEVEL;
 typedef enum
 {
@@ -1934,8 +1933,7 @@ int YMI_HttpCommu(EM_SOCKET_TYPE eSocketType, char *pszUrl, char *pszHead,
     uchar *pbyInData, uint wInDataLen, uchar *pbyOutData, uint wOutDataMaxSize, 
     uint wConnectTimeoutMS, uint wRecvTimeoutMS);
 int YMI_HttpCommuLKL(EM_SOCKET_TYPE eSocketType, char *pszUrl, char *pszHead, 
-    uchar *pbyInData, uint wInDataLen, uchar *pbyOutData, uint wOutDataMaxSize);
-
+    uchar *pbyInData, uint wInDataLen, uchar *pbyOutData, uint wOutDataMaxSize, uint wConnectTimeoutMS, uint wRecvTimeoutMS);
 /**
  *@brief    HTTP download file
  *@param  	eSocketType Socket type, according to the communication type, mainly divided into LTE and WiFi, according to the type of equipment divided into server and terminal (general terminal)

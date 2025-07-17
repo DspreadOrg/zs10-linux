@@ -128,12 +128,12 @@ void syncTimeWithHTTP(){
         SLEEP_S(5);
     }
 
-    int ret = YMI_HttpCommuLKL(SOCKET_TCP_CLIENT,"https://httpbin.org/get",request_headers,request_body,0,response,sizeof(response));
+    //int ret = YMI_HttpCommuLKL(SOCKET_TCP_CLIENT,"https://httpbin.org/get",request_headers,request_body,0,response,sizeof(response));
 
-	if(ret >30){
-		ret = getGmtTimeFromBody(response,timeStr);
-		if(ret == 0){
-			http_date_to_set(timeStr);
-		}
-	}
+// 	if(ret >30){
+// 		ret = getGmtTimeFromBody(response,timeStr);
+// 		if(ret == 0){
+// 			http_date_to_set(timeStr);
+// 		}
+// 	}
 }
