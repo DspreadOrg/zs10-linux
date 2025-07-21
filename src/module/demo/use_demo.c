@@ -95,21 +95,27 @@ int http_date_to_set(const char *http_date) {
                weekday, &day, month, &year, &hour, &min, &sec, zone) != 8) {
         return -1;
     }
-    LOG("=weekday=%s d= %d m=%s y=%d h%d f%d s%d==\n",weekday,day,month,year,hour,min,sec);
+    LOG("=weekday=%s d= %d m=%s \n",weekday,day,month);
+    LOG(" y=%d h%d f%d s%d==\n",year,hour,min,sec);
     memset(&tm_time, 0, sizeof(struct tm));
-    
-    if (strcmp(month, "Jan") == 0) tm_time.tm_mon = 0;
-    else if (strcmp(month, "Feb") == 0) tm_time.tm_mon = 1;
-    else if (strcmp(month, "Mar") == 0) tm_time.tm_mon = 2;
-    else if (strcmp(month, "Apr") == 0) tm_time.tm_mon = 3;
-    else if (strcmp(month, "May") == 0) tm_time.tm_mon = 4;
-    else if (strcmp(month, "Jun") == 0) tm_time.tm_mon = 5;
-    else if (strcmp(month, "Jul") == 0) tm_time.tm_mon = 6;
-    else if (strcmp(month, "Aug") == 0) tm_time.tm_mon = 7;
-    else if (strcmp(month, "Sep") == 0) tm_time.tm_mon = 8;
-    else if (strcmp(month, "Oct") == 0) tm_time.tm_mon = 9;
-    else if (strcmp(month, "Nov") == 0) tm_time.tm_mon = 10;
-    else if (strcmp(month, "Dec") == 0) tm_time.tm_mon = 11;
+    tm_time.tm_year = year;
+    tm_time.tm_mday = day;
+    tm_time.tm_hour = hour;
+    tm_time.tm_min = min;
+    tm_time.tm_sec = sec;
+
+    if (strcmp(month, "Jan") == 0) tm_time.tm_mon = 1;
+    else if (strcmp(month, "Feb") == 0) tm_time.tm_mon = 2;
+    else if (strcmp(month, "Mar") == 0) tm_time.tm_mon = 3;
+    else if (strcmp(month, "Apr") == 0) tm_time.tm_mon = 4;
+    else if (strcmp(month, "May") == 0) tm_time.tm_mon = 5;
+    else if (strcmp(month, "Jun") == 0) tm_time.tm_mon = 6;
+    else if (strcmp(month, "Jul") == 0) tm_time.tm_mon = 7;
+    else if (strcmp(month, "Aug") == 0) tm_time.tm_mon = 8;
+    else if (strcmp(month, "Sep") == 0) tm_time.tm_mon = 9;
+    else if (strcmp(month, "Oct") == 0) tm_time.tm_mon = 10;
+    else if (strcmp(month, "Nov") == 0) tm_time.tm_mon = 11;
+    else if (strcmp(month, "Dec") == 0) tm_time.tm_mon = 12;
 
 	YMI_SysSetDevTime(tm_time);
     return 0;
