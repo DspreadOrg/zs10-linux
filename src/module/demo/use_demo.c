@@ -95,8 +95,9 @@ int http_date_to_set(const char *http_date) {
                weekday, &day, month, &year, &hour, &min, &sec, zone) != 8) {
         return -1;
     }
-    LOG("=weekday=%s d= %d m=%s \n",weekday,day,month);
-    LOG(" y=%d h%d f%d s%d==\n",year,hour,min,sec);
+    
+    LOG(" y=%d m=%s d=%d h=%d m=%d s=%d\n",year,month,day,hour,min,sec);
+
     memset(&tm_time, 0, sizeof(struct tm));
     tm_time.tm_year = year;
     tm_time.tm_mday = day;
@@ -118,6 +119,18 @@ int http_date_to_set(const char *http_date) {
     else if (strcmp(month, "Dec") == 0) tm_time.tm_mon = 12;
 
 	YMI_SysSetDevTime(tm_time);
+
+    struct tm get_tm_time;
+    YMI_SysGetDevTime(&get_tm_time);
+    LOG("tm_sec:   %d\n", get_tm_time.tm_sec);    
+    LOG("tm_min:   %d\n", get_tm_time.tm_min);  
+    LOG("tm_hour:  %d\n", get_tm_time.tm_hour);  
+    LOG("tm_mday:  %d\n", get_tm_time.tm_mday);  
+    LOG("tm_mon:   %d \n", get_tm_time.tm_mon);
+    LOG("tm_year:  %d \n", get_tm_time.tm_year);
+    LOG("tm_wday:  %d\n", get_tm_time.tm_wday);
+    LOG("tm_yday:  %d\n", get_tm_time.tm_yday);  
+    LOG("tm_isdst: %d\n", get_tm_time.tm_isdst);  
     return 0;
 }
 extern int g_iNetOnline;
@@ -134,12 +147,13 @@ void syncTimeWithHTTP(){
         SLEEP_S(5);
     }
 
-    //int ret = YMI_HttpCommuLKL(SOCKET_TCP_CLIENT,"https://httpbin.org/get",request_headers,request_body,0,response,sizeof(response));
-
-// 	if(ret >30){
-// 		ret = getGmtTimeFromBody(response,timeStr);
-// 		if(ret == 0){
-// 			http_date_to_set(timeStr);
-// 		}
-// 	}
+    int ret = YMI_HttpCommuLKL(SOCKET_TCP_CLIENT,"https://httpbin.org/get",request_headers,request_body,0,response,sizeof(response),29*1000,45*1000);
+    LOG("ret= %d",ret);
+    LOG("response=%s",response);
+	if(ret >30){
+		ret = getGmtTimeFromBody(response,timeStr);
+		if(ret == 0){
+			http_date_to_set(timeStr);
+		}
+	}
 }
