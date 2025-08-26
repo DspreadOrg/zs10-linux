@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
     HIDTaskInit();
     AudioTaskInit();
     KeyTaskInit();
+    YMI_LedSetState(EM_LED_STATE_ALL_ON);
     while (YMI_AppIsReadyExit() != YMI_OK)
     {
         SLEEP_MS(100);

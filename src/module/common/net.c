@@ -1,5 +1,5 @@
 /**********************************************************************
-* Copyright (C)    Dspread
+* Copyright (C)    yunmazhineng
 * File name: net.c
 * Summary: Communication related APIs
 *
@@ -96,8 +96,10 @@ static void LTEStatusMonitor(void)
 	EM_WLM_SIM_STATUS eSimStatus;
 	uint wPppStatus;
 
+    YMI_WlSetAutoConnectStatus(1);
+
 	YMI_MutexLock(s_tLETStatusMutex, WAIT_FOREVER);
-	do
+    do
 	{
 		//check sim
 		iCnt = 0;
@@ -108,6 +110,7 @@ static void LTEStatusMonitor(void)
 			// 	NET_LOG("====>out lte monitor");
 			// 	goto exit;
 			// }
+			NET_LOG("check sim status ret=%d, status=%d", iRet, eSimStatus);
 			iRet = YMI_WlCheckSIM(&eSimStatus);
 			NET_LOG("check sim status ret=%d, status=%d", iRet, eSimStatus);
 			if(iRet == RET_SUCC && eSimStatus == EM_WLM_SIM_STATUS_READY)
@@ -180,32 +183,32 @@ static void LTEStatusMonitor(void)
 			SLEEP_MS(LTE_GET_CSQ_WATT_TIEM_MS);
 		}
 		//ppp
-		iCnt = 0;
-		while (1)
-		{
-			// if(SystemInfoGetCurComm() != COMMU_TYPE_LTE)
-			// {
-			// 	NET_LOG("====>out lte monitor");
-			// 	goto exit;
-			// }
-            iRet = start_data_call();
-			if(iRet == RET_SUCC)
-			{
-				break;
-			}
-			if(iCnt == 2)
-			{
-				// AudioPlayInterrupt(AudioWanlljsbqjcwl, FILE_TEXT);
-			}
-			else if(iCnt >= 3)
-			{
-				NET_LOG("[ERR]wait ppp out time reset");
-				YMI_WlModemReset();
-				iCnt = 0;
-			}
-			SLEEP_S(60);
-			iCnt ++;
-		}
+		// iCnt = 0;
+		// while (1)
+		// {
+		// 	// if(SystemInfoGetCurComm() != COMMU_TYPE_LTE)
+		// 	// {
+		// 	// 	NET_LOG("====>out lte monitor");
+		// 	// 	goto exit;
+		// 	// }
+        //     iRet = start_data_call();
+		// 	if(iRet == RET_SUCC)
+		// 	{
+		// 		break;
+		// 	}
+		// 	if(iCnt == 2)
+		// 	{
+		// 		// AudioPlayInterrupt(AudioWanlljsbqjcwl, FILE_TEXT);
+		// 	}
+		// 	else if(iCnt >= 3)
+		// 	{
+		// 		NET_LOG("[ERR]wait ppp out time reset");
+		// 		YMI_WlModemReset();
+		// 		iCnt = 0;
+		// 	}
+		// 	SLEEP_S(60);
+		// 	iCnt ++;
+		// }
 		//check ppp state
 		wPppStatus = 0;
 		iCnt = 0;
@@ -219,11 +222,9 @@ static void LTEStatusMonitor(void)
 			iRet = YMI_PppCheck((uint *)&wPppStatus, LTE_PROFILE_INDEX);
 			if(iRet == RET_SUCC && wPppStatus)
 			{
-                g_iNetOnline = 1;
                 if(!g_iNetOnline)
                 // if(DevInfoGetNetState() != EM_DEV_NET_STATE_ONLINE)
 				{
-					// iRet = YMI_PppGetNetAddr(szBuff, LTE_PROFILE_INDEX);
 					if(iRet == RET_SUCC)
 					{
 						// DevInfoSetIpAdrr(szBuff);
@@ -231,8 +232,17 @@ static void LTEStatusMonitor(void)
 						// DevNixieTubeNetOnline();
 						// AudioPlayInterrupt(AudioWanglljcg, FILE_TEXT);
                         NET_LOG("====>lte online");
-					}
-				}
+					    iRet = YMI_PppGetNetAddr(szBuff, LTE_PROFILE_INDEX);
+                        NET_LOG("[INFO]get ip=%s, ret=%d", szBuff, iRet);
+                    }
+                    g_iNetOnline = 1;
+                    iRet = YMI_NtpSetTime();
+                    if (iRet != YMI_OK)
+                    {
+                        SLEEP_MS(100);
+                        iRet = YMI_NtpSetTime();
+                    }
+                }
                 iCnt = 0;
 			}
 			else
@@ -246,7 +256,7 @@ static void LTEStatusMonitor(void)
 				}
 				iCnt ++;
 			}
-			SLEEP_MS(500);
+			SLEEP_MS(1000);
 		}
 	} while (1);
 exit:

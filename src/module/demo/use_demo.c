@@ -154,6 +154,29 @@ void syncTimeWithHTTP(){
 		ret = getGmtTimeFromBody(response,timeStr);
 		if(ret == 0){
 			http_date_to_set(timeStr);
+            time_t timestamp = time(NULL);
+            LOG("get timestamp%ld\n", timestamp);
 		}
 	}
+}
+void gmt2IST(){
+    char date_time_buf[64]={0};
+    struct tm gmt_tm;
+    int ist_offset = 19800;
+
+    memset(date_time_buf, '\0', sizeof(date_time_buf));
+
+    YMI_SysGetDevTime(&gmt_tm);
+    LOG("[gmt_tm]y=%d m=%d d=%d  h=%d",gmt_tm.tm_year,    gmt_tm.tm_mon,    gmt_tm.tm_mday,    gmt_tm.tm_hour);
+
+    time_t gmt_tt = mktime(&gmt_tm);
+
+    int ist_tt = gmt_tt + ist_offset;
+
+    struct tm *ist_tm = localtime((time_t *)&ist_tt);
+
+    strftime(date_time_buf,sizeof(date_time_buf), "%Y-%m-%d %H:%M:%S",ist_tm);
+
+    LOG("date_time_buf = %s", date_time_buf);
+
 }

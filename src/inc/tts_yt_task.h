@@ -166,7 +166,7 @@ typedef enum
 #define STR_ID_HUNDRED						"hundred"
 #define STR_ID_THOUSAND						"thousand"
 #define STR_ID_DOT						"dot"
-#define STR_ID_VOL_UP						"volume up"
+
 
 #define STR_ID_MQTT_CONNECT_SUCESS		"Service connection successful"
 #define STR_ID_MQTT_CONNECT_FAIL			"Service connection failed"

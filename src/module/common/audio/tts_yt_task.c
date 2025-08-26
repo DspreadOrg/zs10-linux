@@ -58,7 +58,7 @@ AudioResInfo s_stRes[] = {
 	{AUD_ID_HUNDRED,							STR_ID_HUNDRED, 							NULL,							"res/wav/hundred.wav"		},
 	{AUD_ID_THOUSAND,							STR_ID_THOUSAND,							NULL,							"res/wav/thousand.wav"		},
 	//{AUD_ID_DOT,								STR_ID_DOT,									NULL,							"res/wav/dot.wav"		},
-	{AUD_ID_DOT,								STR_ID_VOL_UP,								NULL,							"res/anjianyin.mp3"		},
+	// {AUD_ID_DOT,								STR_ID_VOL_UP,								NULL,							"res/anjianyin.mp3"		},
 
 
 	{AUD_ID_MQTT_CONNECT_SUCESS,				STR_ID_MQTT_CONNECT_SUCESS,					NULL,							"res/MqttConnectSucess.mp3"		},

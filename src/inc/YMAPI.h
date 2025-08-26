@@ -1443,6 +1443,9 @@ int YMI_SysGetDevTime(struct tm *pstTime);
 */
 int YMI_SysSetDevTime(struct tm stTime);
 
+int YMI_WlSetAutoConnectStatus(int onoff);
+int YMI_WlGetAutoConnectStatus(int *status);
+
 //app api
 typedef enum{
 	TASK_OPT_EXIT = 3,
@@ -1932,7 +1935,7 @@ int YMI_MQTTPubMsg(T_Task tTaskID, ST_MQTTPubEventInfo *pstInfo);
 int YMI_HttpCommu(EM_SOCKET_TYPE eSocketType, char *pszUrl, char *pszHead, 
     uchar *pbyInData, uint wInDataLen, uchar *pbyOutData, uint wOutDataMaxSize, 
     uint wConnectTimeoutMS, uint wRecvTimeoutMS);
-int YMI_HttpCommuLKL(EM_SOCKET_TYPE eSocketType, char *pszUrl, char *pszHead, 
+int YMI_HttpCommuDirect(EM_SOCKET_TYPE eSocketType, char *pszUrl, char *pszHead, 
     uchar *pbyInData, uint wInDataLen, uchar *pbyOutData, uint wOutDataMaxSize, uint wConnectTimeoutMS, uint wRecvTimeoutMS);
 /**
  *@brief    HTTP download file
@@ -2133,6 +2136,46 @@ typedef enum {
 */
 int YMI_SegLCDShow(EM_SEGLCD_ICON_TYPE eSLCDIcon, EM_SEGLCD_ICON_STATE eStatus, char * pszString);
 
+/* STD Seg LCD API */
+typedef enum {
+    STD_SEGLCD_MASTER_LCD = 0, /*Main screen wStatus: 0. Not displaying 1 Display incoming string data pszString: Display data*/
+    STD_SEGLCD_SLAVE_LCD = 1, /*Secondary screen wStatus: 0. Not displaying 1 Display incoming string data pszString: Display data*/
+    STD_SEGLCD_LITTLE_NUM = 2,/*Small font wStatus: 0. Not displaying 1 Display incoming string data pszString: Display data*/
+    STD_SEGLCD_CURRENCY = 3,/*Currency unit wStatus: 0. Do not display 1 Display*/
+    STD_SEGLCD_CHARGING = 4, /*Charging icon wStatus: 0. Not charged 1 Charging in progress*/
+    STD_SEGLCD_BATTERY_CELLS = 5,/*Battery wStatus: 0~4. Indicates 0~4 battery levels. 0xFF. Indicates not displayed*/
+    STD_SEGLCD_LTE_TYPE = 6, /*Wireless type wStatus: 0. Not displaying n. nG*/
+    STD_SEGLCD_LTE_CONNET = 7,/*Wireless connection wStatus: 0. Connected 1 Disconnected*/
+    STD_SEGLCD_LTE_SIGNAL = 8,/*Wireless signal wStatus: 0~4 represents 0~4 grid signals*/
+    STD_SEGLCD_WIFI_CONNET = 9,/* WiFi Connection wStatus: 0. Connected 1 Disconnected*/
+    STD_SEGLCD_WIFI_SIGNAL = 10,/* WiFi signal wStatus: 0~4 represents 0~4 grid signal*/
+    STD_SEGLCD_SPEAKER_VOLUME = 11, /*Speaker wStatus: 0-4 indicates 0-4 grid volume, 0xFF indicates off display*/
+} EM_STD_SEGLCD_ICON_TYPE;
+
+typedef enum {
+    /*Used to control icon display/non display */
+    STD_SEGLCD_ICON_OFF = 0,
+    STD_SEGLCD_ICON_ON = 1,
+
+    /*Used for icons with multiple grid states, such as battery level, wireless signal, WiFi signal, volume*/
+    STD_SEGLCD_ICON_CELL_0 = 0,
+    STD_SEGLCD_ICON_CELL_1 = 1,
+    STD_SEGLCD_ICON_CELL_2 = 2,
+    STD_SEGLCD_ICON_CELL_3 = 3,
+    STD_SEGLCD_ICON_CELL_4 = 4,
+    STD_SEGLCD_ICON_CELL_5 = 5,
+
+    /* Used for wireless type icons */
+    STD_SEGLCD_ICON_LTE_4G = 1,
+    STD_SEGLCD_ICON_LTE_4G_DISCONNECT = 2,
+
+    /* Used for WiFi connection icon */
+    STD_SEGLCD_ICON_WIFI = 1,
+    STD_SEGLCD_ICON_WIFI_DISCONNECT = 2,
+} EM_STD_SEGLCD_ICON_STATE;
+
+int YMI_SegLCDShowSTD(EM_STD_SEGLCD_ICON_TYPE eSLCDIcon, EM_STD_SEGLCD_ICON_STATE eStatus, char * pszString);
+
 /**
  *@brief    Segment screen backlight control
  *@param    eBackLight       Refer to"EM_BACKLIGHT"
@@ -2151,11 +2194,14 @@ typedef enum{
     VIDEO_PLAY_STATUS_PLAYING,
 }EM_VIDEO_PLAY_STATUS;
 
-
+/*video play*/
 int YMI_VideoPlayInit(void);
 int YMI_VideoPlayDeinit(void);
 int YMI_VideoPlayStart(int iX, int iY, uint wWidth, uint wHeight, char *pszFileName, uint wTimes);
 int YMI_VideoPlayUpdateWindows(int iX, int iY, uint wWidth, uint wHeight);
 EM_VIDEO_PLAY_STATUS YMI_VideoPlayGetStatus(void);
 int YMI_VideoPlayStop(void);
+
+/* ntp */
+int YMI_NtpSetTime(void);
 #endif
