@@ -155,6 +155,7 @@ static void LTEStatusMonitor(void)
 					// AudioPlayInterrupt(AudioWanlljsbqjcwl, FILE_TEXT);
 				}
 			}
+            SLEEP_S(1);
 		}
 		//csq
 		iCnt = 0;
@@ -234,6 +235,8 @@ static void LTEStatusMonitor(void)
                         NET_LOG("====>lte online");
 					    iRet = YMI_PppGetNetAddr(szBuff, LTE_PROFILE_INDEX);
                         NET_LOG("[INFO]get ip=%s, ret=%d", szBuff, iRet);
+                        iRet = YMI_WlGetInfo(EM_WLM_INFO_IMEI, szBuff, sizeof(szBuff));
+                        NET_LOG("[INFO]IMEI=%s, ret=%d", szBuff, iRet);
                     }
                     g_iNetOnline = 1;
                     iRet = YMI_NtpSetTime();

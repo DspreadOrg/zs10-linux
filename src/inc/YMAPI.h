@@ -552,7 +552,7 @@ typedef enum
 
 typedef struct
 {
-    uint wId;     ///< event identifier
+    long wId;     ///< event identifier
     ulong wParam1; ///< 1st parameter
     ulong wParam2; ///< 2nd parameter
     ulong wParam3; ///< 3rd parameter
