@@ -184,32 +184,32 @@ static void LTEStatusMonitor(void)
 			SLEEP_MS(LTE_GET_CSQ_WATT_TIEM_MS);
 		}
 		//ppp
-		// iCnt = 0;
-		// while (1)
-		// {
-		// 	// if(SystemInfoGetCurComm() != COMMU_TYPE_LTE)
-		// 	// {
-		// 	// 	NET_LOG("====>out lte monitor");
-		// 	// 	goto exit;
-		// 	// }
-        //     iRet = start_data_call();
-		// 	if(iRet == RET_SUCC)
-		// 	{
-		// 		break;
-		// 	}
-		// 	if(iCnt == 2)
-		// 	{
-		// 		// AudioPlayInterrupt(AudioWanlljsbqjcwl, FILE_TEXT);
-		// 	}
-		// 	else if(iCnt >= 3)
-		// 	{
-		// 		NET_LOG("[ERR]wait ppp out time reset");
-		// 		YMI_WlModemReset();
-		// 		iCnt = 0;
-		// 	}
-		// 	SLEEP_S(60);
-		// 	iCnt ++;
-		// }
+		iCnt = 0;
+		while (1)
+		{
+			// if(SystemInfoGetCurComm() != COMMU_TYPE_LTE)
+			// {
+			// 	NET_LOG("====>out lte monitor");
+			// 	goto exit;
+			// }
+            iRet = start_data_call();
+			if(iRet == RET_SUCC)
+			{
+				break;
+			}
+			if(iCnt == 2)
+			{
+				// AudioPlayInterrupt(AudioWanlljsbqjcwl, FILE_TEXT);
+			}
+			else if(iCnt >= 3)
+			{
+				NET_LOG("[ERR]wait ppp out time reset");
+				YMI_WlModemReset();
+				iCnt = 0;
+			}
+			SLEEP_S(60);
+			iCnt ++;
+		}
 		//check ppp state
 		wPppStatus = 0;
 		iCnt = 0;
