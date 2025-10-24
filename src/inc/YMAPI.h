@@ -1595,11 +1595,88 @@ int YMI_WiFiConAp(ST_WIFIAPConf stWiFiAp, char *pszSsid, char *pszPsk);
 //wifi connect to a hotspot (airkiss)
 int YMI_WiFiDirect(ST_WIFIDirConf stWiFiDir, char *pszSsid, char *pszPsk);
 
-//wifi sokcet
-int YMI_WiFiSocketConnect(int *piFd, const char *c_pszHost,int iPort,int iProto);
-int YMI_WiFiSocketRead(int iIdx, unsigned char *c_pszBuffer, ulong ulBufLen, uint wTimeout);
-int YMI_WiFiSocketWrite(int iIdx, const char *c_pszBuffer, ulong ulLen, uint wTimeout);
-int YMI_WiFiSocketFree(int iIdx);
+//wifi API
+enum WIFI_AUTH_MODE{
+    AUTH_NONE_OPEN=1,
+    AUTH_NONE_WEP,
+    AUTH_NONE_WEP_SHARED,
+    AUTH_IEEE8021X,
+    AUTH_WPA_PSK,
+    AUTH_WPA_EAP,
+    AUTH_WPA_WPA2_PSK,
+    AUTH_WPA_WPA2_EAP,
+    AUTH_WPA2_PSK,
+    AUTH_WPA2_EAP
+};
+typedef struct
+{
+    char Essid[WLAN_SSID_MAX_LEN+1];/* AP name */
+    char Bssid[20];/* MAC*/
+    int Channel; 
+    int Mode;   /* connection mode, 0:Station; 1:IBSS */
+    int Rssi;   /* range【-99，0】*/
+    int AuthMode;
+    int SecMode; /* secure, 0x00:none,0x01:WEP 40bit key,0x02:WEP 104bit key,0x04:WEP unknow bit key,0x10:AES,0x20:TKIP*/
+}WIFI_AP_INFO_T;
+/**
+ *@brief     WiFi scan for existing APs
+ *@details  
+ *@param    Aps                   APs list
+
+ *@return
+ *@li       >0                    The number of APs found
+ *@li       YMI_ERR_WIFI_OPEN     scan failed
+ *@li       YMI_ERR_PARA          Illegal  parameter
+*/
+int YMI_WifiScan(WIFI_AP_INFO_T **Aps);
+
+/**
+ *@brief     Connect to a WiFi AP, the default authentication mode is AUTH_WPA_PSK.if the password is empty, the authentication mode is AUTH_NONE_WEP
+ *@details  
+ *@param    pEssid                AP name,max size is 31 bytes
+ *@param    pPassword             Password, max size is 63 bytes
+ *@param    timeoutMs             Timeout (Milliseconds)
+
+ *@return
+ *@li   YMI_OK              Operation successful
+*/
+int YMI_WifiConnect(char* pEssid,char* pPassword,int timeoutMs);
+/**
+ *@brief    Get the information of the current WiFi access point, including AP name, MAC, RSSI
+ *@details  
+ *@param    pEssid                Save AP name
+ *@param    pBssid                Save AP MAC
+ *@param    pRssi                 Save RSSI
+
+ *@return
+ *@li   YMI_OK              Operation successful
+*/
+int YMI_WifiGetInfo(char *pEssid,char *pBssid,int *pRssi);
+/**
+ *@brief    Check the WiFi connection status
+ *@details  
+ 
+ *@return
+ *@li   YMI_OK                  connetcted
+ *@li   YMI_ERR_WIFI_QUESTAT    disconnected
+*/
+int YMI_WifiCheck();
+/**
+ *@brief    Disconnect from WiFi
+ *@details  
+ *@return
+ *@li   YMI_OK              Operation successful
+*/
+int YMI_WifiDisConnect();
+/**
+ *@brief    Get WiFi auto connect status
+ *@details
+ *@param    status                Save status,0:not auto-connect,1:auto-connect
+ *@return
+ *@li   YMI_OK              Operation successful
+*/
+int YMI_WifiGetAutoConnectStatus(int *status);
+
 
 /* NVM API */
 /**

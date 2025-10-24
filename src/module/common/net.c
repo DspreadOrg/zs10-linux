@@ -266,12 +266,58 @@ exit:
 	YMI_PppHangup(LTE_PROFILE_INDEX);
 	YMI_MutexUnLock(s_tLETStatusMutex);
 }
-// void WIFIInfoSet(char *pacSSID, char *pacPWD)
-// {
-//     SystemInfoSetWIFISSID(pacSSID);
-//     SystemInfoSetWIFIPWD(pacPWD);
-// }
+static void WIFIStatusMonitor(void)
+{
+    char szSsid[64] = "YUNMA-Server24", szPwd[64] = "yunma2024";//for test
+	int iRet, i, iCnt = 0;
+	WIFI_AP_INFO_T *pstApInfo = NULL;
+	
 
+	
+	iCnt = YMI_WifiScan(&pstApInfo);
+	if(iCnt > 0)
+	{
+		for(i = 0; i < iCnt; i++)
+		{
+			NET_LOG("Essid=%s, Bssid=%s, Channel=%d, Mode=%d, Rssi=%d, AuthMode=%d, SecMode=%d", 
+				pstApInfo[i].Essid, pstApInfo[i].Bssid, pstApInfo[i].Channel, 
+				pstApInfo[i].Mode, pstApInfo[i].Rssi, pstApInfo[i].AuthMode, pstApInfo[i].SecMode);
+
+		}
+		FREE(pstApInfo);
+	}
+	YMI_WifiGetAutoConnectStatus(&i);
+	NET_LOG("auto connect status=%d", i);
+	if(i)
+	{
+		YMI_WifiDisConnect();
+		SLEEP_MS(100);
+	}
+    while (1)
+    {
+		if(YMI_WifiCheck() != RET_SUCC)
+		{
+			NET_LOG("[ERR]wifi check failed ready to connect wifi ssid=%s, pwd=%s", szSsid, szPwd);
+			iRet = YMI_WifiConnect(szSsid, szPwd, 10 * 1000);
+			if(iRet == RET_SUCC)
+			{
+				NET_LOG("connect wifi ok");
+				iRet = YMI_WifiGetInfo(szSsid, NULL, &i);
+				if(iRet == RET_SUCC)
+				{
+					NET_LOG("[INFO]ssid=%s, rssi=%d", szSsid, i);
+				}
+			}
+			else
+			{
+				NET_LOG("[ERR]connect wifi failed");
+				SLEEP_S(30);
+			}
+		}
+		SLEEP_S(1);
+    }
+	YMI_WifiDisConnect();
+}
 static void NetTask(void *pvParam)
 {
     // EM_COMMU_TYPE eCurCommuType = COMMU_TYPE_UNKNOWN;
@@ -288,8 +334,8 @@ static void NetTask(void *pvParam)
 				break;
 			}
 		}
-        LTEStatusMonitor();
-        // WIFIStatusMonitor();
+        // LTEStatusMonitor();
+        WIFIStatusMonitor();
 
         // if(eCurCommuType != SystemInfoGetCurComm())
         // {

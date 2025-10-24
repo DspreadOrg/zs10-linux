@@ -708,6 +708,15 @@ static int MQTTYield(reconnectpara *pstPara, int iTimeOutMS)
 				break;
 			}
 		}
+		for(i = 0; i < pstConf->iPubNum; i++)
+		{
+			if(pstConf->astPubList[i].iPubRet != YMI_OK)
+			{
+				pstPara->cal_set.mqtt_pub = MQTT_CACK;
+				ALIOT_PRINT("pub %s fail ret=0x%04x", pstConf->astPubList[i].szPubTopic, -pstConf->astPubList[i].iPubRet);
+				break;
+			}
+		}
 		SLEEP_MS(iTimeOutMS);
 		return 0;
 	}
@@ -1353,14 +1362,14 @@ void start_Mqtt_dual_task(void)
 		}
 		
 	}
-	SLEEP_S(2);
-	if (!(TermInfo.MqttIsRuning&MqttMaskB))
-	{
-		if (YMI_TaskCreat(&mqtt_task_ctrl_threadB, "mqtt_work_setB", 2 * 1024, mqtt_work_taskB, NULL, EM_TASK_PRIORITY_NORMAL, 5) != RET_SUCC)
-		{
-			ALIOT_PRINT("thread create mqtt B error\n");
-		}
-	}
+	// SLEEP_S(2);
+	// if (!(TermInfo.MqttIsRuning&MqttMaskB))
+	// {
+	// 	if (YMI_TaskCreat(&mqtt_task_ctrl_threadB, "mqtt_work_setB", 2 * 1024, mqtt_work_taskB, NULL, EM_TASK_PRIORITY_NORMAL, 5) != RET_SUCC)
+	// 	{
+	// 		ALIOT_PRINT("thread create mqtt B error\n");
+	// 	}
+	// }
 }
 
 void test_mqtt_dual(void)
