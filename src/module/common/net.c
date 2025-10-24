@@ -268,7 +268,7 @@ exit:
 }
 static void WIFIStatusMonitor(void)
 {
-    char szSsid[64] = "YUNMA-Server24", szPwd[64] = "yunma2024";//for test
+    char szSsid[64] = "Dsp-Guest", szPwd[64] = "12345678";//for test
 	int iRet, i, iCnt = 0;
 	WIFI_AP_INFO_T *pstApInfo = NULL;
 	
