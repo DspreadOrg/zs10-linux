@@ -459,14 +459,14 @@ int DevEventResSaveDone(ST_Event *pstEvent)
 		}
 	}
 	iRet = RET_SUCC;
-	// mbedtls_sha256_finish(&stSha256, (uchar *)szBuff);
-	// if(memcmp(szBuff, szHash, 32))
-	// {
-	// 	DEV_LOG("[ERR]hash not same");
-	// 	LOG_HEX("in hash", szHash, 32);
-	// 	LOG_HEX("out hash", szBuff, 32);
-	// 	iRet = RET_FAIL;
-	// }
+	mbedtls_sha256_finish(&stSha256, (uchar *)szBuff);
+	if(memcmp(szBuff, szHash, 32))
+	{
+		DEV_LOG("[ERR]hash not same");
+		LOG_HEX("in hash", szHash, 32);
+		LOG_HEX("out hash", szBuff, 32);
+		iRet = RET_FAIL;
+	}
 exit:
 	YMI_FsClose(iReadFd);
 	if (pstDevInfo)
