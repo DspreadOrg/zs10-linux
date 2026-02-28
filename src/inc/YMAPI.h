@@ -1507,94 +1507,6 @@ void YMI_AppStart(int argc, char *argv[]);
 */
 void YMI_AppEnd(void);
 
-/*WiFi*/
-typedef int (*CB_WIFI_LOOP_BREAK)(void);
-
-typedef struct 
-{
-	const char *c_pszSsid;
-	const char *c_pszIp;
-	const char *c_pszPsk;
-	int iTimeout;
-	CB_WIFI_LOOP_BREAK cb_APBreak;
-} ST_WIFIAPConf;
-
-typedef struct 
-{
-	const char *c_pszKey;
-	int iTimeout;
-	CB_WIFI_LOOP_BREAK DirBreak;
-} ST_WIFIDirConf;
-
-typedef struct wlan_ssid {
-	uint8_t wSsid[WLAN_SSID_MAX_LEN];
-	uint8_t wSsidLen;
-} ST_WIFISSID;
-
-typedef struct wlan_sta_ap {
-	ST_WIFISSID stSsid;
-	uint8_t		wBssid[6];
-	int		iLevel;	/* signal level, unit is dbm */
-} ST_WIFIAPInfo;
-
-typedef enum {
-    WIFIRF_OFF ,         
-    WIFIRF_ON,           
-}EM_WIFIRF;
-
-/**
- *@brief        Turn on WiFi
- *@details
- *@return
- *@li    YMI_OK             Operation successful
- *@li    \ref YMI_ERR_WIFI_OPEN "YMI_ERR_WIFI_OPEN"       Failed to open
-*/
-int YMI_WiFiOpen(void);
-
-/**
- *@brief       Turn off WiFi
-*/
-void YMI_WiFiClose(void);
-
-//Set the hotspot name, password
-int YMI_WiFiStaSet(char const *c_pszSsid, char const * c_pszKey);
-
-//Query status
-int YMI_WiFiQueStat(int *piStat);
-//Time synchronization via IP, NTP
-int YMI_WiFiSntpTime(char const *c_pszHost);
-
-/**
- *@brief        Domain name resolution, which allows you to obtain an IP address from a domain name
- *@details
- *@param     c_pszName  domain name
- *@param     piAddr  IP address resolved
- *@return
- *@li    YMI_OK             Operation successful
- *@li    \ref YMI_ERR_PARA "YMI_ERR_PARA"       Illegal parameter (piAddr == NULL || c_pszName == NULL)
- *@li    \ref YMI_ERR_WIFI_GET_HOST "YMI_ERR_WIFI_GET_HOST"     Operation failed
-*/
-int YMI_WiFiGetHostName(char const *c_pszName, int *piAddr);
-
-//ap information
-int YMI_WiFiGetApInfo(ST_WIFIAPInfo *stApInfo);
-
-int YMI_WiFiSetRF(EM_WIFIRF emRF);
-//WiFi signal strength
-int YMI_WiFiGetApLevel(int *piLevel);
-
-//WiFi MAC address
-int YMI_WiFiReadMac(char *pszMac, uint wState);
-
-//wifi 
-int YMI_WiFiSelfUpdate(char const * c_pszUrl);
-
-//WiFi connect to a hotspot (AP)
-int YMI_WiFiConAp(ST_WIFIAPConf stWiFiAp, char *pszSsid, char *pszPsk);
-
-//wifi connect to a hotspot (airkiss)
-int YMI_WiFiDirect(ST_WIFIDirConf stWiFiDir, char *pszSsid, char *pszPsk);
-
 //wifi API
 enum WIFI_AUTH_MODE{
     AUTH_NONE_OPEN=1,
@@ -1951,6 +1863,8 @@ typedef struct
     CB_MQTT_PROCESS cb_OTAStart;//"ota start" -> "The Ota (Over-the-Air) update has begun. Return the start time of the upgrade in the format of "yyyy-mm-dd hh-mm-ss"."
     CB_MQTT_PROCESS cb_OTASucc;//OTA upgrade was successful
     CB_MQTT_PROCESS cb_OTAFail;//OTA upgrade failed
+    CB_MQTT_PROCESS cb_OTADownOver;//OTA upgrade success
+    char *pszLargePassword;
 }ST_MQTTConf;
 typedef struct 
 {
